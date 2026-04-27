@@ -1011,13 +1011,16 @@ body * { cursor: none; }
     .line-1 {
         font-size: clamp(3.4rem, 14vw, 5rem);
         letter-spacing: 0.12em;
+        font-weight: bold;
     }
     .line-2 {
         font-size: clamp(5rem, 18vw, 6.4rem);
+        font-weight: bold;
     }
     .line-3 {
         font-size: clamp(2.6rem, 9.5vw, 3.6rem);
         letter-spacing: 0.2em;
+        font-weight: bold;
     }
     .features-grid { grid-template-columns: 1fr; }
     .details-grid { grid-template-columns: 1fr; }
