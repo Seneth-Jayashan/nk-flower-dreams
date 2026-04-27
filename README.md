@@ -56,7 +56,8 @@ NK Flower Dreams/
 - Administration and backend management details are intentionally excluded from this README.
 - This document is focused on public website usage only.
 
-## License
+## Author
 
-This project currently has no explicit license file.
-Add a `LICENSE` file if you want to define usage permissions.
+- S JAY | One X Universe (pvt) Ltd
+- All Rights Reserved ©
+
