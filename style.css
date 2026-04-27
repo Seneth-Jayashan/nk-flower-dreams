@@ -618,6 +618,35 @@ body * { cursor: none; }
     filter: brightness(1) saturate(1.2);
 }
 
+.product-meta {
+    margin-top: 0.9rem;
+    padding: 0 0.2rem;
+}
+
+.product-meta h3 {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    line-height: 1.2;
+    margin-bottom: 0.35rem;
+    color: var(--ink);
+}
+
+.product-meta p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: rgba(26,16,10,0.62);
+}
+
+.product-price {
+    font-family: 'Poppins', var(--font-body);
+    font-size: 0.88rem;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+    color: var(--coral) !important;
+    margin-bottom: 0.2rem !important;
+}
+
 /* ============================================================
    CTA SECTION
    ============================================================ */
