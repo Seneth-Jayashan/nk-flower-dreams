@@ -133,34 +133,88 @@ if ($editId > 0) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | NK Flower Dreams</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Dashboard | Product Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="admin.css">
 </head>
-<body class="dashboard-page">
-    <header class="dashboard-header">
-        <div>
-            <h1>Product Management</h1>
-            <p>Welcome, <?= e((string) ($_SESSION['admin_name'] ?? 'Admin')) ?></p>
-        </div>
-        <div class="header-actions">
-            <a class="btn btn-ghost" href="../index.php" target="_blank" rel="noopener">View Website</a>
-            <a class="btn btn-danger" href="logout.php">Logout</a>
-        </div>
-    </header>
+<body class="dashboard-page <?= $editProduct ? 'modal-open' : '' ?>">
 
     <main class="dashboard-grid">
-        <section class="panel panel-form">
-            <h2><?= $editProduct ? 'Update Product' : 'Add Product' ?></h2>
+        <?php if ($message = flash('error')): ?>
+            <div class="alert alert-error"><?= e($message) ?></div>
+        <?php endif; ?>
+        <?php if ($message = flash('success')): ?>
+            <div class="alert alert-success"><?= e($message) ?></div>
+        <?php endif; ?>
 
-            <?php if ($message = flash('error')): ?>
-                <div class="alert alert-error"><?= e($message) ?></div>
-            <?php endif; ?>
-            <?php if ($message = flash('success')): ?>
-                <div class="alert alert-success"><?= e($message) ?></div>
-            <?php endif; ?>
+        <section class="panel panel-table">
+            <h2>Products Inventory</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Details</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php if (!$products): ?>
+                        <tr>
+                            <td colspan="5" class="empty-state">No products found. Start by adding one.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($products as $product): ?>
+                            <tr>
+                                <td data-label="Image">
+                                    <img class="thumb" src="../<?= e((string) $product['image_path']) ?>" alt="<?= e((string) $product['name']) ?>" loading="lazy">
+                                </td>
+                                <td data-label="Details" class="details-cell">
+                                    <strong><?= e((string) $product['name']) ?></strong>
+                                    <span class="meta-text">ID: <?= (int) $product['id'] ?> | Updated: <?= e(date('M d, Y', strtotime((string) $product['updated_at']))) ?></span>
+                                </td>
+                                <td data-label="Price" class="price-cell">
+                                    <?= $product['price'] !== null ? 'LKR ' . number_format((float)$product['price'], 2) : '-' ?>
+                                </td>
+                                <td data-label="Status">
+                                    <span class="status <?= (int) $product['is_active'] === 1 ? 'status-active' : 'status-hidden' ?>">
+                                        <?= (int) $product['is_active'] === 1 ? 'Active' : 'Hidden' ?>
+                                    </span>
+                                </td>
+                                <td data-label="Actions" class="actions-cell">
+                                    <div class="actions">
+                                        <button class="btn btn-small btn-ghost admin-open-form" type="button" data-edit-url="dashboard.php?edit=<?= (int) $product['id'] ?>">Edit</button>
+                                        <form method="post" onsubmit="return confirm('Delete this product permanently?');">
+                                            <?= csrf_field('product_manage') ?>
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="<?= (int) $product['id'] ?>">
+                                            <button class="btn btn-small btn-danger" type="submit">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
-            <form method="post" enctype="multipart/form-data" class="admin-form" novalidate>
+    <div class="admin-form-modal <?= $editProduct ? 'is-open' : '' ?>" id="admin-form-modal" aria-hidden="<?= $editProduct ? 'false' : 'true' ?>" role="dialog" aria-modal="true">
+        <div class="admin-form-modal__backdrop" data-close-modal></div>
+        <section class="panel panel-form admin-form-modal__panel" role="document">
+            <div class="admin-form-modal__header">
+                <h2 id="admin-form-modal-title"><?= $editProduct ? 'Update Product' : 'Add New Product' ?></h2>
+                <button type="button" class="admin-form-modal__close" aria-label="Close form" data-close-modal>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="admin-form" id="admin-product-form" novalidate>
                 <?= csrf_field('product_manage') ?>
                 <input type="hidden" name="action" value="save">
                 <input type="hidden" name="id" value="<?= (int) ($editProduct['id'] ?? 0) ?>">
@@ -169,7 +223,7 @@ if ($editId > 0) {
                 <input type="text" id="name" name="name" required maxlength="180" value="<?= e((string) ($editProduct['name'] ?? '')) ?>">
 
                 <label for="description">Description</label>
-                <textarea id="description" name="description" rows="4" placeholder="Optional product details"><?= e((string) ($editProduct['description'] ?? '')) ?></textarea>
+                <textarea id="description" name="description" rows="3" placeholder="Optional product details"><?= e((string) ($editProduct['description'] ?? '')) ?></textarea>
 
                 <div class="field-row">
                     <div>
@@ -182,7 +236,7 @@ if ($editId > 0) {
                     </div>
                 </div>
 
-                <label for="image">Product Image (JPG, PNG, WEBP, max 3MB)</label>
+                <label for="image">Product Image (JPG, PNG, WEBP)</label>
                 <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp" <?= $editProduct ? '' : 'required' ?>>
 
                 <?php if ($editProduct && !empty($editProduct['image_path'])): ?>
@@ -194,65 +248,113 @@ if ($editId > 0) {
                     Visible on website
                 </label>
 
-                <button class="btn btn-primary" type="submit"><?= $editProduct ? 'Update Product' : 'Add Product' ?></button>
-
-                <?php if ($editProduct): ?>
-                    <a class="btn btn-ghost" href="dashboard.php">Cancel Edit</a>
-                <?php endif; ?>
+                <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-direction: column;">
+                    <button class="btn btn-primary" type="submit"><?= $editProduct ? 'Update Product' : 'Save Product' ?></button>
+                    <?php if ($editProduct): ?>
+                        <button type="button" class="btn btn-ghost" data-close-modal style="width: 100%;">Cancel</button>
+                    <?php endif; ?>
+                </div>
             </form>
         </section>
+    </div>
 
-        <section class="panel panel-table">
-            <h2>Products</h2>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                        <th>Updated</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php if (!$products): ?>
-                        <tr>
-                            <td colspan="7">No products yet.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($products as $product): ?>
-                            <tr>
-                                <td><?= (int) $product['id'] ?></td>
-                                <td>
-                                    <img class="thumb" src="../<?= e((string) $product['image_path']) ?>" alt="<?= e((string) $product['name']) ?>">
-                                </td>
-                                <td><?= e((string) $product['name']) ?></td>
-                                <td><?= $product['price'] !== null ? 'Rs. ' . e((string) $product['price']) : '-' ?></td>
-                                <td>
-                                    <span class="status <?= (int) $product['is_active'] === 1 ? 'status-active' : 'status-hidden' ?>">
-                                        <?= (int) $product['is_active'] === 1 ? 'Active' : 'Hidden' ?>
-                                    </span>
-                                </td>
-                                <td><?= e((string) $product['updated_at']) ?></td>
-                                <td class="actions">
-                                    <a class="btn btn-small btn-ghost" href="dashboard.php?edit=<?= (int) $product['id'] ?>">Edit</a>
-                                    <form method="post" onsubmit="return confirm('Delete this product?');">
-                                        <?= csrf_field('product_manage') ?>
-                                        <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="id" value="<?= (int) $product['id'] ?>">
-                                        <button class="btn btn-small btn-danger" type="submit">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+    <div class="admin-bottom-actions" role="toolbar" aria-label="Admin quick actions">
+        <button type="button" class="btn btn-ghost" onclick="window.location.href='dashboard.php'" aria-label="Refresh">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            <span>Refresh</span>
+        </button>
+        
+        <button type="button" class="btn btn-primary action-highlight" id="admin-action-add">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Add New</span>
+        </button>
+
+        <a class="btn btn-danger" href="logout.php">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span>Logout</span>
+        </a>
+    </div>
+
+    <script>
+        (function initAdminDashboardActions() {
+            const modal = document.getElementById('admin-form-modal');
+            const form = document.getElementById('admin-product-form');
+            const addButton = document.getElementById('admin-action-add');
+            const closeButtons = document.querySelectorAll('[data-close-modal]');
+            const editButtons = document.querySelectorAll('.admin-open-form');
+            const title = document.getElementById('admin-form-modal-title');
+            const idField = form.querySelector('input[name="id"]');
+            const fileField = form.querySelector('input[name="image"]');
+            const activeField = form.querySelector('input[name="is_active"]');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            function openModal() {
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
+            }
+
+            function closeModal() {
+                // If we are in edit mode, closing should clear the URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('edit')) {
+                    window.location.href = 'dashboard.php';
+                    return;
+                }
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('modal-open');
+            }
+
+            function setAddNewMode() {
+                form.reset();
+                if (idField) idField.value = '0';
+                if (title) title.textContent = 'Add New Product';
+                if (fileField) fileField.required = true;
+                if (activeField) activeField.checked = true;
+                if (submitBtn) submitBtn.textContent = 'Save Product';
+
+                const preview = form.querySelector('.edit-preview');
+                if (preview) preview.remove();
+            }
+
+            addButton.addEventListener('click', function () {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('edit')) {
+                    // Redirect without edit param so form clears fully
+                    window.location.href = 'dashboard.php?add_new=true';
+                } else {
+                    setAddNewMode();
+                    openModal();
+                }
+            });
+
+            // Auto-open if coming back from an edit redirect logic
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('add_new')) {
+                setAddNewMode();
+                openModal();
+                // Clean URL visually without reload
+                window.history.replaceState({}, document.title, "dashboard.php");
+            }
+
+            closeButtons.forEach(function (button) {
+                button.addEventListener('click', closeModal);
+            });
+
+            editButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const url = button.getAttribute('data-edit-url');
+                    if (url) window.location.href = url;
+                });
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

@@ -18,7 +18,7 @@ define('LOGIN_LOCK_MINUTES', 15);
 
 define('UPLOAD_DIR', __DIR__ . '/../images/uploads');
 define('UPLOAD_URL_BASE', 'images/uploads');
-define('MAX_UPLOAD_BYTES', 3 * 1024 * 1024); // 3MB
+define('MAX_UPLOAD_BYTES', 10 * 1024 * 1024); // 10MB
 
 const ALLOWED_IMAGE_MIME = [
     'image/jpeg' => 'jpg',

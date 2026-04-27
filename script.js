@@ -36,7 +36,7 @@ gsap.registerPlugin(ScrollTrigger);
     tick();
 
     // Hover state on interactive elements
-    document.querySelectorAll('a, button, .product-item, .feature-card, .details-card').forEach(el => {
+    document.querySelectorAll('a, button, .product-item, .product-card, .feature-card, .details-card').forEach(el => {
         el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
         el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
     });
@@ -604,4 +604,74 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
     update();
     startAutoplay();
+})();
+
+
+// ─────────────────────────────────────────────
+// 14. Product Detail Modal
+// ─────────────────────────────────────────────
+(function initProductModal() {
+    const modal = document.getElementById('product-modal');
+    const title = document.getElementById('product-modal-title');
+    const description = document.getElementById('product-modal-description');
+    const price = document.getElementById('product-modal-price');
+    const image = document.getElementById('product-modal-image');
+
+    if (!modal || !title || !description || !price || !image) return;
+
+    const closeTargets = modal.querySelectorAll('[data-modal-close]');
+    const productCards = document.querySelectorAll('.product-card[data-product-name]');
+    let lastFocusedElement = null;
+
+    function openModal(card) {
+        const name = card.dataset.productName || '';
+        const descriptionText = card.dataset.productDescription || '';
+        const priceValue = card.dataset.productPrice || '';
+        const imagePath = card.dataset.productImage || '';
+
+        title.textContent = name;
+        description.textContent = descriptionText || 'Handcrafted floral design from NK Flower Dreams.';
+        price.textContent = priceValue ? `Rs. ${priceValue}` : '';
+        price.hidden = !priceValue;
+        image.src = imagePath;
+        image.alt = name;
+
+        lastFocusedElement = document.activeElement;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+
+        const closeButton = modal.querySelector('.product-modal__close');
+        if (closeButton) closeButton.focus();
+    }
+
+    function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+            lastFocusedElement.focus();
+        }
+    }
+
+    productCards.forEach(card => {
+        card.addEventListener('click', () => openModal(card));
+        card.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openModal(card);
+            }
+        });
+    });
+
+    closeTargets.forEach(target => {
+        target.addEventListener('click', closeModal);
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+            closeModal();
+        }
+    });
 })();

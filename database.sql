@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS nk_flower_dreams CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE nk_flower_dreams;
+CREATE DATABASE IF NOT EXISTS nkflow_nk_flower_dreams CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE nkflow_nk_flower_dreams;
 
 CREATE TABLE IF NOT EXISTS admins (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

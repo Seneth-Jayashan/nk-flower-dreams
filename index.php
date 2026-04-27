@@ -132,6 +132,65 @@ try {
             </div>
         </section>
 
+        <!-- Products Showcase -->
+        <section class="section section-products" id="section-products">
+            <div class="container">
+                <div class="products-header">
+                    <h2 class="section-title">Our <em>Collection</em></h2>
+                    <p class="products-sub reveal-fade">Each arrangement is a one-of-a-kind work of art</p>
+                </div>
+                <div class="products-carousel reveal-up" id="products-carousel">
+                    <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous collection">
+                        &#10094;
+                    </button>
+
+                    <div class="carousel-viewport">
+                        <div class="carousel-track">
+                            <?php if (!$products): ?>
+                                <article class="carousel-slide">
+                                    <div class="product-img-wrap">
+                                        <img src="images/collections/1.png" alt="NK Flower Dreams Collection" class="product-img product-img--door">
+                                    </div>
+                                    <div class="product-meta">
+                                        <h3>Handcrafted Collection</h3>
+                                        <p>New products will appear here once added from admin dashboard.</p>
+                                    </div>
+                                </article>
+                            <?php else: ?>
+                                <?php foreach ($products as $product): ?>
+                                    <article class="carousel-slide product-card" tabindex="0" role="button"
+                                        data-product-name="<?= htmlspecialchars((string) $product['name'], ENT_QUOTES, 'UTF-8') ?>"
+                                        data-product-description="<?= htmlspecialchars((string) ($product['description'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                                        data-product-price="<?= htmlspecialchars((string) ($product['price'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                                        data-product-image="<?= htmlspecialchars((string) $product['image_path'], ENT_QUOTES, 'UTF-8') ?>"
+                                    >
+                                        <div class="product-img-wrap">
+                                            <img src="<?= htmlspecialchars((string) $product['image_path'], ENT_QUOTES, 'UTF-8') ?>"
+                                                alt="<?= htmlspecialchars((string) $product['name'], ENT_QUOTES, 'UTF-8') ?>"
+                                                class="product-img product-img--door">
+                                        </div>
+                                        <div class="product-meta">
+                                            <h3><?= htmlspecialchars((string) $product['name'], ENT_QUOTES, 'UTF-8') ?></h3>
+                                            <?php if ($product['price'] !== null): ?>
+                                                <p class="product-price">Rs. <?= htmlspecialchars((string) $product['price'], ENT_QUOTES, 'UTF-8') ?></p>
+                                            <?php endif; ?>
+                                            <?php if (!empty($product['description'])): ?>
+                                                <p><?= htmlspecialchars((string) $product['description'], ENT_QUOTES, 'UTF-8') ?></p>
+                                            <?php endif; ?>
+                                        </div>
+                                    </article>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next collection">
+                        &#10095;
+                    </button>
+                </div>
+            </div>
+        </section>
+
         <!-- Features Section -->
         <section class="section section-features" id="section-features">
             <div class="container">
@@ -165,60 +224,6 @@ try {
                         <h3>Custom Creations</h3>
                         <p>Bespoke sizes, colours, and arrangements tailored exactly to your vision and space.</p>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Products Showcase -->
-        <section class="section section-products" id="section-products">
-            <div class="container">
-                <div class="products-header">
-                    <h2 class="section-title">Our <em>Collection</em></h2>
-                    <p class="products-sub reveal-fade">Each arrangement is a one-of-a-kind work of art</p>
-                </div>
-                <div class="products-carousel reveal-up" id="products-carousel">
-                    <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous collection">
-                        &#10094;
-                    </button>
-
-                    <div class="carousel-viewport">
-                        <div class="carousel-track">
-                            <?php if (!$products): ?>
-                                <article class="carousel-slide">
-                                    <div class="product-img-wrap">
-                                        <img src="images/collections/1.png" alt="NK Flower Dreams Collection" class="product-img product-img--door">
-                                    </div>
-                                    <div class="product-meta">
-                                        <h3>Handcrafted Collection</h3>
-                                        <p>New products will appear here once added from admin dashboard.</p>
-                                    </div>
-                                </article>
-                            <?php else: ?>
-                                <?php foreach ($products as $product): ?>
-                                    <article class="carousel-slide">
-                                        <div class="product-img-wrap">
-                                            <img src="<?= htmlspecialchars((string) $product['image_path'], ENT_QUOTES, 'UTF-8') ?>"
-                                                alt="<?= htmlspecialchars((string) $product['name'], ENT_QUOTES, 'UTF-8') ?>"
-                                                class="product-img product-img--door">
-                                        </div>
-                                        <div class="product-meta">
-                                            <h3><?= htmlspecialchars((string) $product['name'], ENT_QUOTES, 'UTF-8') ?></h3>
-                                            <?php if ($product['price'] !== null): ?>
-                                                <p class="product-price">Rs. <?= htmlspecialchars((string) $product['price'], ENT_QUOTES, 'UTF-8') ?></p>
-                                            <?php endif; ?>
-                                            <?php if (!empty($product['description'])): ?>
-                                                <p><?= htmlspecialchars((string) $product['description'], ENT_QUOTES, 'UTF-8') ?></p>
-                                            <?php endif; ?>
-                                        </div>
-                                    </article>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
-                    <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next collection">
-                        &#10095;
-                    </button>
                 </div>
             </div>
         </section>
@@ -308,6 +313,22 @@ try {
             <span class="mobile-bottom-nav__label">Payments</span>
         </a>
     </nav>
+
+    <div class="product-modal" id="product-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
+        <div class="product-modal__overlay" data-modal-close></div>
+        <div class="product-modal__dialog" role="document">
+            <button type="button" class="product-modal__close" aria-label="Close product details" data-modal-close>&times;</button>
+            <div class="product-modal__media">
+                <img id="product-modal-image" src="" alt="">
+            </div>
+            <div class="product-modal__content">
+                <p class="product-modal__eyebrow">Collection Piece</p>
+                <h3 id="product-modal-title"></h3>
+                <p class="product-modal__price" id="product-modal-price"></p>
+                <p class="product-modal__description" id="product-modal-description"></p>
+            </div>
+        </div>
+    </div>
 
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>

@@ -50,11 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Setup | NK Flower Dreams</title>
+    <meta name="theme-color" content="#0d0a08">
     <link rel="stylesheet" href="admin.css">
 </head>
 <body class="auth-page">
     <main class="auth-shell">
         <section class="auth-card">
+            <div class="auth-badge">NK Flower Dreams Admin</div>
             <h1>First-Time Admin Setup</h1>
             <p>Create your secure administrator account</p>
 

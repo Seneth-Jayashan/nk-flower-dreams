@@ -40,11 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | NK Flower Dreams</title>
+    <meta name="theme-color" content="#0d0a08">
     <link rel="stylesheet" href="admin.css">
 </head>
 <body class="auth-page">
     <main class="auth-shell">
         <section class="auth-card">
+            <div class="auth-badge">NK Flower Dreams Admin</div>
             <h1>Admin Sign In</h1>
             <p>Secure access to product management</p>
 
@@ -70,6 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <button type="submit">Sign In</button>
             </form>
+
+            <a class="btn btn-ghost" href="../index.php" target="_blank" rel="noopener" style="margin-top: 0.7rem; width: 100%;">View Website</a>
 
             <a class="setup-link" href="setup.php">First-time setup</a>
         </section>
